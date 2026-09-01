@@ -18,7 +18,7 @@
 
     /* marco del teléfono: gris oscuro para resaltar la pantalla clara */
     .phone {
-      width: 390px;
+      width: calc(390px + 6mm);
       background: #202124;
       border-radius: 36px;
       padding: 14px;
@@ -44,8 +44,6 @@
       font-size: 14px;
       font-weight: 500;
     }
-    .iso { position: absolute; left: 12px; top: 28px; font-size: 12px; color: #202124; }
-    .battery { position: absolute; right: 8px; top: 26px; font-size: 12px; color: #202124; }
     /* punch-hole cámara frontal estilo Xiaomi */
     .notch {
       width: 14px;
@@ -142,9 +140,7 @@
   <div class="phone">
     <div class="screen">
       <div class="status-bar">
-        <span class="iso"></span>
         <div class="notch"></div>
-        <span class="battery"></span>
       </div>
 
       <div class="history" id="history"></div>
@@ -372,15 +368,6 @@
         else if(k==='.'||k===',') pressDot();
         else if(k==='Escape'||k==='Backspace') doClear();
       });
-
-      const iso=document.querySelector('.iso'), battery=document.querySelector('.battery');
-      function clock(){
-        const n=new Date();
-        iso.textContent=n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0');
-      }
-      clock();
-      setInterval(clock,1000);
-      battery.textContent='73%  \u25B3';
     })();
   </script>
 </body>
