@@ -122,7 +122,6 @@
     .gray { background: #dbdde0; color: #202124; font-size: 20px; }
     /* dígitos: fondo claro bordes suaves */
     .orange { background: #ff9100; color: #ffffff; font-size: 30px; }
-    .zero { grid-column: span 2; border-radius: 18px; justify-content: flex-start; padding-left: 30px; }
     .op-lg { font-size: 30px; }
 
     .toast {
@@ -165,7 +164,13 @@
 
       <div class="buttons">
         <button class="btn gray" id="btnAC">AC</button>
-        <button class="btn gray" id="btnSign">&plusmn;</button>
+        <button class="btn gray" id="btnBack" aria-label="Borrar">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/>
+            <line x1="18" y1="9" x2="12" y2="15"/>
+            <line x1="12" y1="9" x2="18" y2="15"/>
+          </svg>
+        </button>
         <button class="btn gray" id="btnPct">&#37;</button>
         <button class="btn orange op-lg" id="btnDiv">&#247;</button>
 
@@ -184,7 +189,13 @@
         <button class="btn" data-num="3">3</button>
         <button class="btn orange op-lg" id="btnAdd">+</button>
 
-        <button class="btn zero" data-num="0">0</button>
+        <button class="btn gray" id="btnRotate" aria-label="Rotar">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12a9 9 0 1 1-2.64-6.36"/>
+            <polyline points="21 3 21 9 15 9"/>
+          </svg>
+        </button>
+        <button class="btn" data-num="0">0</button>
         <button class="btn" id="btnDot">.</button>
         <button class="btn orange op-lg" id="btnEq">=</button>
       </div>
@@ -199,7 +210,8 @@
       const history = document.getElementById('history');
       const toast = document.getElementById('toast');
       const btnAC = document.getElementById('btnAC');
-      const btnSign = document.getElementById('btnSign');
+      const btnBack = document.getElementById('btnBack');
+      const btnRotate = document.getElementById('btnRotate');
       const btnPct = document.getElementById('btnPct');
       const btnDiv = document.getElementById('btnDiv');
       const btnMul = document.getElementById('btnMul');
@@ -347,14 +359,30 @@
         render();
       }
 
-      function doSign(){
-        if(!tokens.length) return;
+      function doBackspace(){
+        if(!tokens.length){ render(); return; }
         const last = tokens[tokens.length-1];
-        if(/^\d+(\.\d+)?$/.test(last)){
-          if(last.charAt(0)==='-') tokens[tokens.length-1] = last.slice(1);
-          else tokens[tokens.length-1] = '-'+last;
+        if(/^[\d.]+$/.test(last)){
+          // borrar último carácter de un número
+          const shorter = last.slice(0,-1);
+          if(shorter==='-' || shorter==='' || shorter==='.' || shorter==='0.'){
+            tokens.pop();
+          } else {
+            tokens[tokens.length-1] = shorter;
+          }
+        } else {
+          // borrar un operador
+          tokens.pop();
+        }
+        if(justEqualed){
+          justEqualed=false; product=null; tokens=[];
         }
         render();
+      }
+
+      function doRotate(){
+        // botón visual de rotar pantalla: sin acción para no delatar el truco
+        void 0;
       }
 
       document.querySelectorAll('.btn[data-num]').forEach(b=>{
@@ -368,7 +396,8 @@
       btnPct.addEventListener('click', doTrick);
       btnEq.addEventListener('click', doEquals);
       btnAC.addEventListener('click', doClear);
-      btnSign.addEventListener('click', doSign);
+      btnBack.addEventListener('click', doBackspace);
+      btnRotate.addEventListener('click', doRotate);
 
       document.addEventListener('keydown',(e)=>{
         const k=e.key;
